@@ -61,7 +61,7 @@ class visionmaskdetector:
 
     def readimage(self,face_model,image='/Users/shaivyachandra/Downloads/archive/images/maksssksksss244.png'):
         # Read a input image from Face Mask dataset
-        face_image = cv2.imread('/Users/shaivyachandra/Downloads/archive/images/maksssksksss244.png')
+        face_image = cv2.imread('/Users/shaivyachandra/Downloads/archive/images/maksssksksss5.png')
         # Convert image to grayscale for performing face detection
         face_image = cv2.cvtColor(face_image, cv2.IMREAD_GRAYSCALE)
 
@@ -164,27 +164,24 @@ class visionmaskdetector:
 
         speak = False
         sound_file=''
-        text_response =''
+        text_response ='No one present near you'
+        print(len(captured_faces))
         if len(captured_faces)>=2:
             label = [0 for i in range(len(captured_faces))]
             mask = []
             nomask = []
             lists =[]
-
-
             # Euclidean distance calculation between faces
             for i in range(len(captured_faces)-1):
                 for j in range(i+1, len(captured_faces)):
                     dist = distance.euclidean(captured_faces[i][:2],captured_faces[j][:2])
-                    print(dist)
                     lists.append(dist)
-
                     if MIN_DISTANCE>dist:
                         label[i] = 1
                         label[j] = 1
 
 
-
+            print(lists)
 
             new_color_img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR) # Insert annotations in the image
             for i in range(len(captured_faces)):
@@ -204,19 +201,20 @@ class visionmaskdetector:
             plt.savefig('/Users/shaivyachandra/PycharmProjects/wic/venv/maskornot.png')
             # Generate audio alert message if distance is lesser than minimum threshold
             mindist = min(nomask)
-            if mindist<MIN_DISTANCE:
+            if mindist<MIN_DISTANCE and len(captured_faces)>0:
                 text_response = 'Someone passing by without mask near you at '+str(round(mindist, 2))+'ft'
                 tts = gTTS('Someone passing by without mask near you at '+str(round(mindist, 2))+'ft')
                 tts.save('response.wav')
                 print('saved')
 
                 speak = True
+                playsound('/Users/shaivyachandra/PycharmProjects/response.wav')
 
         else:
-            print("No. of faces detected is less than 2")
-        #Audio(sound_file, autoplay=True)
-        if speak:
-            playsound('/Users/shaivyachandra/PycharmProjects/response.wav')
+            print("Less than 2 ppl present near you")
+
+
+
         return text_response
 
 
